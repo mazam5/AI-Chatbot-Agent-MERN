@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from "express";
+import { Request, Response, NextFunction } from 'express';
 
 export function errorHandler(
   err: Error,
@@ -9,6 +9,6 @@ export function errorHandler(
   console.error(err);
 
   res.status(500).json({
-    message: err.message || "Internal server error"
+    message: err.message || 'Internal server error',
   });
 }

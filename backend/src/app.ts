@@ -1,13 +1,20 @@
-import express from "express";
-import healthRouter from "./routes/health";
-import { errorHandler } from "./middleware/errorHandler";
-import morgan from "morgan";
-const app = express();
+import express, { Application } from 'express';
+import morgan from 'morgan';
+import swaggerUi from 'swagger-ui-express';
+
+import { errorHandler } from './middleware/errorHandler';
+import chatRouter from './routes/chat';
+import healthRouter from './routes/health';
+import { swaggerSpec } from './swagger';
+
+const app: Application = express();
 
 app.use(express.json());
-app.use(morgan("combined"));
+app.use(morgan('dev'));
 
-app.use("/health", healthRouter);
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use('/health', healthRouter);
+app.use('/chat', chatRouter);
 
 app.use(errorHandler);
 
