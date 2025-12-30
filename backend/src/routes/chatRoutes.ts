@@ -1,6 +1,8 @@
 import { Request, Response, Router } from 'express';
+import { ChatController } from '../controllers/chatController';
 
 const router = Router();
+const chatController = new ChatController();
 /**
  * @swagger
  * /chat/message:
@@ -29,11 +31,11 @@ const router = Router();
  *                 sessionId:
  *                   type: string
  */
-router.post('/message', (req: Request, res: Response) => {
-  res.json({
-    reply: req.body.message || 'Hello',
-    sessionId: req.body.sessionId || 'Id1234',
-  });
-});
+router.post('/message', (req: Request, res: Response) =>
+  chatController.sendMessage(req, res)
+);
 
+router.get('/history/:sessionId', (req: Request, res: Response) =>
+  chatController.getHistory(req, res)
+);
 export default router;

@@ -1,6 +1,6 @@
 {
   "watch": ["src"],
-  "ext": "ts",
-  "ignore": ["dist"],
-  "exec": "node --inspect=9229 -r ts-node/register src/server.ts"
+  "ext": "ts,json",
+  "ignore": ["src/**/*.spec.ts"],
+  "exec": "tsx --inspect=9229 src/server.ts"
 }
