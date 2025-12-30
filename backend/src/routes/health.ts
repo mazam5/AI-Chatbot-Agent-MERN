@@ -23,7 +23,7 @@ const router = Router();
  *                     type: string
  */
 router.get('/', async (_req, res) => {
-  res.json({ status: 'ok' });
+  res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
 export default router;
