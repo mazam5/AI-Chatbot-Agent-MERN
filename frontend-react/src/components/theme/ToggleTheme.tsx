@@ -1,33 +1,24 @@
-import { useEffect } from "react"
-import { Moon, Sun } from "lucide-react"
-import { Toggle } from "@/components/ui/toggle"
-import { useTheme } from "@/components/providers/theme-provider"
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip"
-import { Kbd } from "@/components/ui/kbd"
+import { useEffect } from 'react'
+import { Moon, Sun } from 'lucide-react'
+import { Toggle } from '@/components/ui/toggle'
+import { useTheme } from '@/components/providers/theme-provider'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
+import { Kbd } from '@/components/ui/kbd'
 
 export function ToggleTheme() {
   const { theme, setTheme } = useTheme()
-  const isDark = theme === "dark"
+  const isDark = theme === 'dark'
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
-      if (
-        e.key.toLowerCase() === "~" &&
-        !e.metaKey &&
-        !e.ctrlKey &&
-        !e.altKey
-      ) {
+      if (e.key.toLowerCase() === '~' && !e.metaKey && !e.ctrlKey && !e.altKey) {
         e.preventDefault()
-        setTheme(isDark ? "light" : "dark")
+        setTheme(isDark ? 'light' : 'dark')
       }
     }
 
-    window.addEventListener("keydown", handler)
-    return () => window.removeEventListener("keydown", handler)
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
   }, [isDark, setTheme])
 
   return (
@@ -37,14 +28,12 @@ export function ToggleTheme() {
           variant="outline"
           size="lg"
           pressed={isDark}
-          onPressedChange={(pressed) =>
-            setTheme(pressed ? "dark" : "light")
-          }
+          onPressedChange={(pressed) => setTheme(pressed ? 'dark' : 'light')}
           aria-label="Toggle theme"
           className="relative"
         >
-          <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:rotate-90 dark:scale-0" />
-          <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+          <Sun className="h-[1.2rem] w-[1.2rem] scale-100 rotate-0 transition-all dark:scale-0 dark:rotate-90" />
+          <Moon className="absolute h-[1.2rem] w-[1.2rem] scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
         </Toggle>
       </TooltipTrigger>
 

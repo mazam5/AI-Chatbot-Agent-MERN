@@ -3,35 +3,35 @@
 
 @font-face {
   font-family: Rubik;
-  src: url('../public/fonts/Rubik-Regular.ttf') format('truetype');
+  src: url('../fonts/Rubik-Regular.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
 }
 
 @font-face {
   font-family: Rubik;
-  src: url('../public/fonts/Rubik-Medium.ttf') format('truetype');
+  src: url('../fonts/Rubik-Medium.ttf') format('truetype');
   font-weight: 500;
   font-style: normal;
 }
 
 @font-face {
   font-family: Rubik;
-  src: url('../public/fonts/Rubik-SemiBold.ttf') format('truetype');
+  src: url('../fonts/Rubik-SemiBold.ttf') format('truetype');
   font-weight: 600;
   font-style: normal;
 }
 
 @font-face {
   font-family: Rubik;
-  src: url('../public/fonts/Rubik-Bold.ttf') format('truetype');
+  src: url('../fonts/Rubik-Bold.ttf') format('truetype');
   font-weight: bold;
   font-style: normal;
 }
 
 @font-face {
   font-family: Rubik;
-  src: url('../public/fonts/Rubik-ExtraBold.ttf') format('truetype');
+  src: url('../fonts/Rubik-ExtraBold.ttf') format('truetype');
   font-weight: 800;
   font-style: normal;
 }

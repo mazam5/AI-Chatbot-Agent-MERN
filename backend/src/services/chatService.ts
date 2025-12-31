@@ -1,4 +1,4 @@
-import { prisma } from '../config/database';
+import { pool } from '../config/database';
 import {
   Message,
   ConversationSummary,
@@ -8,18 +8,44 @@ import {
 
 export class ChatService {
   async getAllSessions(): Promise<ConversationSummary[]> {
-    const conversations = await prisma.conversation.findMany({
-      orderBy: { createdAt: 'desc' },
-      include: {
-        messages: {
-          orderBy: { createdAt: 'asc' },
-        },
-      },
-    });
+    const { rows } = await pool.query(
+      `
+      SELECT
+        c.id,
+        c.created_at,
+        m.id AS message_id,
+        m.sender,
+        m.text,
+        m.created_at AS message_created_at
+      FROM conversations c
+      LEFT JOIN messages m ON m.conversation_id = c.id
+      ORDER BY c.created_at DESC, m.created_at ASC
+      `
+    );
 
-    return conversations.map((conversation) => {
+    const map = new Map<string, any>();
+
+    for (const row of rows) {
+      if (!map.has(row.id)) {
+        map.set(row.id, {
+          id: row.id,
+          createdAt: row.created_at,
+          messages: [],
+        });
+      }
+
+      if (row.message_id) {
+        map.get(row.id).messages.push({
+          sender: row.sender,
+          text: row.text,
+          createdAt: row.message_created_at,
+        });
+      }
+    }
+
+    return Array.from(map.values()).map((conversation) => {
       const firstUserMessage = conversation.messages.find(
-        (m) => convertSender(m.sender) === 'user'
+        (m: any) => convertSender(m.sender) === 'user'
       );
 
       const lastMessage =
@@ -37,25 +63,24 @@ export class ChatService {
   }
 
   async deleteSession(sessionId: string): Promise<void> {
-    await prisma.conversation.delete({
-      where: { id: sessionId },
-    });
+    await pool.query(`DELETE FROM conversations WHERE id = $1`, [sessionId]);
   }
 
   async createConversation(): Promise<string> {
-    const conversation = await prisma.conversation.create({
-      data: {},
-    });
+    const { rows } = await pool.query(
+      `INSERT INTO conversations DEFAULT VALUES RETURNING id`
+    );
 
-    return conversation.id;
+    return rows[0].id;
   }
 
   async conversationExists(conversationId: string): Promise<boolean> {
-    const conversation = await prisma.conversation.findUnique({
-      where: { id: conversationId },
-    });
+    const { rowCount } = await pool.query(
+      `SELECT 1 FROM conversations WHERE id = $1`,
+      [conversationId]
+    );
 
-    return conversation !== null;
+    return rowCount === 1;
   }
 
   async saveMessage(
@@ -63,27 +88,32 @@ export class ChatService {
     sender: SenderString,
     text: string
   ): Promise<void> {
-    await prisma.message.create({
-      data: {
-        conversationId,
-        sender: sender,
-        text: text.slice(0, 10000),
-      },
-    });
+    await pool.query(
+      `
+      INSERT INTO messages (conversation_id, sender, text)
+      VALUES ($1, $2, $3)
+      `,
+      [conversationId, sender, text.slice(0, 10000)]
+    );
   }
 
   async getConversationHistory(conversationId: string): Promise<Message[]> {
-    const messages = await prisma.message.findMany({
-      where: { conversationId },
-      orderBy: { createdAt: 'asc' },
-    });
+    const { rows } = await pool.query(
+      `
+      SELECT id, conversation_id, sender, text, created_at
+      FROM messages
+      WHERE conversation_id = $1
+      ORDER BY created_at ASC
+      `,
+      [conversationId]
+    );
 
-    return messages.map((msg) => ({
+    return rows.map((msg) => ({
       id: msg.id,
-      conversationId: msg.conversationId,
+      conversationId: msg.conversation_id,
       sender: convertSender(msg.sender),
       text: msg.text,
-      createdAt: msg.createdAt,
+      createdAt: msg.created_at,
     }));
   }
 
@@ -91,24 +121,23 @@ export class ChatService {
     conversationId: string,
     limit: number = 10
   ): Promise<Message[]> {
-    const messages = await prisma.message.findMany({
-      where: { conversationId },
-      orderBy: { createdAt: 'asc' },
-      take: limit * 2,
-    });
+    const { rows } = await pool.query(
+      `
+      SELECT id, conversation_id, sender, text, created_at
+      FROM messages
+      WHERE conversation_id = $1
+      ORDER BY created_at DESC
+      LIMIT $2
+      `,
+      [conversationId, limit * 2]
+    );
 
-    const recentMessages = messages.slice(-limit * 2);
-
-    return recentMessages.map((msg) => ({
+    return rows.reverse().map((msg) => ({
       id: msg.id,
-      conversationId: msg.conversationId,
+      conversationId: msg.conversation_id,
       sender: convertSender(msg.sender),
       text: msg.text,
-      createdAt: msg.createdAt,
+      createdAt: msg.created_at,
     }));
-  }
-
-  async disconnect(): Promise<void> {
-    await prisma.$disconnect();
   }
 }
