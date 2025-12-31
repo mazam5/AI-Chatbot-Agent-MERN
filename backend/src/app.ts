@@ -3,8 +3,8 @@ import morgan from 'morgan';
 import swaggerUi from 'swagger-ui-express';
 import cors from 'cors';
 
-import chatRouter from './routes/chatRoutes';
-import healthRouter from './routes/health';
+import chatRouter from './routes/chatRoutes.js';
+import healthRouter from './routes/health.js';
 import { swaggerSpec } from './swagger';
 
 const app: Application = express();
