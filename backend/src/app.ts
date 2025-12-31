@@ -3,7 +3,6 @@ import morgan from 'morgan';
 import swaggerUi from 'swagger-ui-express';
 import cors from 'cors';
 
-import { errorHandler } from './middleware/errorHandler';
 import chatRouter from './routes/chatRoutes';
 import healthRouter from './routes/health';
 import { swaggerSpec } from './swagger';
@@ -32,7 +31,5 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use((_req, res) => {
   res.status(404).json({ error: 'Route not found' });
 });
-
-app.use(errorHandler);
 
 export default app;
