@@ -1,7 +1,5 @@
 node_modules
 .env
 *-lock.json
-/generated/prisma
 /dist
-/src/generated/prisma
 .vscode
