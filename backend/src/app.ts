@@ -5,7 +5,7 @@ import cors from 'cors';
 
 import chatRouter from './routes/chatRoutes.js';
 import healthRouter from './routes/health.js';
-import { swaggerSpec } from './swagger';
+import { swaggerSpec } from './swagger.js';
 
 const app: Application = express();
 

@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import { ChatService } from '../services/chatService';
-import { LLMService } from '../services/llmService';
+import { ChatService } from '../services/chatService.js';
+import { LLMService } from '../services/llmService.js';
 
 export class ChatController {
   private chatService: ChatService;
