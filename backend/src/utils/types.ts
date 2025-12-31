@@ -1,15 +1,11 @@
-// utils/types.ts
-
-// Keep the string literal type for internal use
 export type SenderString = 'user' | 'ai';
 
-// Enum type from Prisma
 export type SenderEnum = 'USER' | 'AI';
 
 export interface Message {
   id: string;
   conversationId: string;
-  sender: SenderString; // This is what we want internally
+  sender: SenderString;
   text: string;
   createdAt: Date;
 }
@@ -17,7 +13,7 @@ export interface Message {
 export interface PrismaMessage {
   id: string;
   conversationId: string;
-  sender: SenderEnum; // This is what Prisma returns
+  sender: SenderEnum;
   text: string;
   createdAt: Date;
 }
@@ -51,7 +47,6 @@ export interface ConversationSummary {
   messageCount: number;
 }
 
-// Helper function to convert Prisma sender to our internal sender
 export function convertSender(sender: SenderEnum | string): SenderString {
   if (typeof sender === 'string') {
     return sender.toLowerCase() === 'user' ? 'user' : 'ai';

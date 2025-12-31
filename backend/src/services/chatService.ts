@@ -1,4 +1,3 @@
-// services/chatService.ts
 import { prisma } from '../config/database';
 import {
   Message,
@@ -79,7 +78,6 @@ export class ChatService {
       orderBy: { createdAt: 'asc' },
     });
 
-    // Convert Prisma messages to our internal Message type
     return messages.map((msg) => ({
       id: msg.id,
       conversationId: msg.conversationId,

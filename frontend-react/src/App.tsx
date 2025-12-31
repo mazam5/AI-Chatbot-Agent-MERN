@@ -40,7 +40,6 @@ function App() {
         <ChatContainer
           currentSessionId={currentSessionId}
           onSessionUpdate={handleSessionUpdate}
-          onNewChat={handleNewChat}
         />
       </Layout>
     </ThemeProvider>

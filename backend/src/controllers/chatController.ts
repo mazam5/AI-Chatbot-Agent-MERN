@@ -20,7 +20,6 @@ export class ChatController {
         return;
       }
 
-      // Create or validate conversation
       let conversationId = sessionId;
 
       if (!conversationId) {
@@ -34,17 +33,13 @@ export class ChatController {
         }
       }
 
-      // Save user message
       await this.chatService.saveMessage(conversationId, 'user', message);
 
-      // Get conversation history
       const history =
         await this.chatService.getConversationHistory(conversationId);
 
-      // Generate AI response
       const aiReply = await this.llmService.generateReply(history, message);
 
-      // Save AI response
       await this.chatService.saveMessage(conversationId, 'ai', aiReply);
 
       res.json({

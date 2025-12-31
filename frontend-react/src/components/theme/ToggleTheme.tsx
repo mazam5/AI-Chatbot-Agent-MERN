@@ -13,7 +13,6 @@ export function ToggleTheme() {
   const { theme, setTheme } = useTheme()
   const isDark = theme === "dark"
 
-  // Keyboard shortcut: M
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (

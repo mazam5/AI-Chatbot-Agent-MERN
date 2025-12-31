@@ -73,10 +73,8 @@ WARRANTY:
     userMessage: string
   ): Promise<string> {
     try {
-      // Build conversation context
       const conversationContext = this.buildConversationContext(history);
 
-      // Create the full prompt
       const fullPrompt = `${this.systemPrompt}
 
 Previous conversation:
@@ -86,7 +84,6 @@ Customer: ${userMessage}
 
 Support Agent:`;
 
-      // Generate response with timeout
       const timeoutPromise = new Promise<never>((_, reject) =>
         setTimeout(() => reject(new Error('Request timeout')), 30000)
       );
@@ -122,13 +119,11 @@ Support Agent:`;
         throw new Error('Request timeout');
       }
 
-      // Fallback response
       return "I apologize, but I'm experiencing technical difficulties. Please try again in a moment or email us at support@azamon.com for immediate assistance.";
     }
   }
 
   private buildConversationContext(history: Message[]): string {
-    // Limit to last 10 messages to avoid token limits
     const recentHistory = history.slice(-10);
 
     return recentHistory

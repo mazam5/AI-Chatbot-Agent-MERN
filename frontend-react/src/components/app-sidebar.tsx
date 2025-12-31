@@ -20,7 +20,7 @@ interface AppSidebarProps {
     onSelectSession: (sessionId: string) => void;
     onNewChat: () => void;
     onDeleteSession: (sessionId: string) => void;
-    key?: string | number;
+    refreshTrigger?: number;
 }
 
 export function AppSidebar({
@@ -28,7 +28,7 @@ export function AppSidebar({
     onSelectSession,
     onNewChat,
     onDeleteSession,
-    key
+    refreshTrigger
 }: AppSidebarProps) {
     const { state, toggleSidebar } = useSidebar();
     const [sessions, setSessions] = useState<ChatSession[]>([]);
@@ -52,10 +52,10 @@ export function AppSidebar({
         return () => window.removeEventListener("keydown", handler);
     }, [state, toggleSidebar]);
 
-    // Load chat sessions from API
+
     useEffect(() => {
         loadSessions();
-    }, [key]); // Reload when key changes (refreshTrigger)
+    }, [refreshTrigger]);
 
     const loadSessions = async () => {
         try {
@@ -85,13 +85,13 @@ export function AppSidebar({
             try {
                 await chatAPI.deleteSession(sessionId);
 
-                // Update UI immediately
+
                 setSessions(prev => prev.filter(s => s.id !== sessionId));
 
-                // Notify parent component
+
                 onDeleteSession(sessionId);
 
-                // Reload sessions to ensure consistency
+
                 await loadSessions();
             } catch (error) {
                 console.error('Failed to delete session:', error);

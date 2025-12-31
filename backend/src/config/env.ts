@@ -3,6 +3,6 @@ export const config = {
   nodeEnv: process.env.NODE_ENV || 'development',
   googleGenAIKey: process.env.GOOGLE_GENAI_API_KEY,
   maxMessageLength: 10000,
-  maxHistoryMessages: 10, // Last N messages to include in context
-  llmTimeout: 30000, // 30 seconds
+  maxHistoryMessages: 10,
+  llmTimeout: 30000,
 } as const;

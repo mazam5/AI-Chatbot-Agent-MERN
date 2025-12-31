@@ -28,7 +28,7 @@ export default function Layout({
                     onSelectSession={onSelectSession}
                     onNewChat={onNewChat}
                     onDeleteSession={onDeleteSession}
-                    key={refreshTrigger}
+                    refreshTrigger={refreshTrigger}
                 />
 
                 <main className="relative flex-1 overflow-hidden">

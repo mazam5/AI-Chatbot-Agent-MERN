@@ -1,19 +1,17 @@
 import { chatAPI } from '@/services/chatApi';
 import type { ApiMessage, ChatMessage } from '@/types';
-import { AlertCircle, Bot, Check, Copy, Loader2, RotateCcw, Send, User } from 'lucide-react';
+import { AlertCircle, Bot, Check, Copy, Loader2, Send, User } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { ToggleTheme } from './theme/ToggleTheme';
 import { Button } from './ui/button';
 import { Textarea } from './ui/textarea';
-import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
 
 interface ChatContainerProps {
     currentSessionId: string | null;
     onSessionUpdate: (sessionId: string) => void;
-    onNewChat: () => void;
 }
 
-const ChatContainer = ({ currentSessionId, onSessionUpdate, onNewChat }: ChatContainerProps) => {
+const ChatContainer = ({ currentSessionId, onSessionUpdate, }: ChatContainerProps) => {
     const [messages, setMessages] = useState<ChatMessage[]>([
         {
             id: 1,
@@ -45,7 +43,7 @@ const ChatContainer = ({ currentSessionId, onSessionUpdate, onNewChat }: ChatCon
         }
     }, [input]);
 
-    // Load messages from API when session changes
+
     useEffect(() => {
         const loadMessages = async () => {
             if (currentSessionId) {
@@ -54,7 +52,7 @@ const ChatContainer = ({ currentSessionId, onSessionUpdate, onNewChat }: ChatCon
                     const history = await chatAPI.getChatHistory(currentSessionId);
 
                     if (history && history.length > 0) {
-                        // Convert API response to ChatMessage format
+
                         const formattedMessages: ChatMessage[] = history.map((msg: ApiMessage) => ({
                             id: msg.id,
                             role: msg.sender === 'user' ? 'user' : 'ai',
@@ -63,7 +61,7 @@ const ChatContainer = ({ currentSessionId, onSessionUpdate, onNewChat }: ChatCon
                         }));
                         setMessages(formattedMessages);
                     } else {
-                        // If no history, show initial greeting
+
                         setMessages([
                             {
                                 id: 1,
@@ -76,7 +74,7 @@ const ChatContainer = ({ currentSessionId, onSessionUpdate, onNewChat }: ChatCon
                 } catch (err) {
                     console.error('Failed to load chat history:', err);
                     setError('Failed to load chat history');
-                    // Show initial greeting on error
+
                     setMessages([
                         {
                             id: 1,
@@ -89,7 +87,7 @@ const ChatContainer = ({ currentSessionId, onSessionUpdate, onNewChat }: ChatCon
                     setIsLoadingHistory(false);
                 }
             } else {
-                // Reset to initial message for new chat
+
                 setMessages([
                     {
                         id: 1,
@@ -115,17 +113,17 @@ const ChatContainer = ({ currentSessionId, onSessionUpdate, onNewChat }: ChatCon
             timestamp: new Date()
         };
 
-        // Optimistically add user message
+
         setMessages(prev => [...prev, userMessage]);
         setInput('');
         setIsTyping(true);
         setError(null);
 
         try {
-            // Send message to API - let the backend create or use existing session
+
             const response = await chatAPI.sendMessage(input, currentSessionId || undefined);
 
-            // Update session ID from API response
+
             if (!currentSessionId && response.sessionId) {
                 onSessionUpdate(response.sessionId);
             }
@@ -138,7 +136,7 @@ const ChatContainer = ({ currentSessionId, onSessionUpdate, onNewChat }: ChatCon
             };
 
             setMessages(prev => {
-                // Remove the optimistic message and add the confirmed one with AI response
+
                 const filtered = prev.filter(msg => msg.id !== userMessage.id);
                 return [...filtered, { ...userMessage, id: Date.now() - 1 }, aiMessage];
             });
@@ -147,10 +145,10 @@ const ChatContainer = ({ currentSessionId, onSessionUpdate, onNewChat }: ChatCon
             const errorMsg = err instanceof Error ? err.message : 'Failed to get response';
             setError(errorMsg);
 
-            // Remove the optimistic user message on error
+
             setMessages(prev => prev.filter(msg => msg.id !== userMessage.id));
 
-            // Add error message
+
             const errorMessage: ChatMessage = {
                 id: Date.now() + 1,
                 role: 'ai',
@@ -178,7 +176,6 @@ const ChatContainer = ({ currentSessionId, onSessionUpdate, onNewChat }: ChatCon
 
     return (
         <div className="w-full h-full flex flex-col bg-background">
-            {/* Header */}
             <header className="bg-card border-b shadow-sm shrink-0">
                 <div className="px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
                     <div className="flex items-center gap-3">
@@ -196,25 +193,11 @@ const ChatContainer = ({ currentSessionId, onSessionUpdate, onNewChat }: ChatCon
                     </div>
                     <div className="flex items-center gap-3">
                         <ToggleTheme />
-                        <Tooltip>
-                            <TooltipTrigger asChild>
-                                <Button
-                                    onClick={onNewChat}
-                                    className="p-2 hover:bg-accent rounded-lg transition-colors"
-                                >
-                                    <RotateCcw className="w-4 h-4 sm:w-5 sm:h-5" />
-                                </Button>
-                            </TooltipTrigger>
 
-                            <TooltipContent side="bottom" className="flex items-center gap-2">
-                                <span>Reset conversation</span>
-                            </TooltipContent>
-                        </Tooltip>
                     </div>
                 </div>
             </header>
 
-            {/* Error Banner */}
             {error && (
                 <div className="bg-destructive/10 border-b border-destructive/20 px-4 py-3">
                     <div className="flex items-center gap-2 text-destructive text-sm">
@@ -224,7 +207,6 @@ const ChatContainer = ({ currentSessionId, onSessionUpdate, onNewChat }: ChatCon
                 </div>
             )}
 
-            {/* Messages Container */}
             <div className="flex-1 overflow-y-auto">
                 <div className="px-3 sm:px-4 md:px-6 py-4 max-w-4xl mx-auto">
                     {isLoadingHistory ? (
@@ -238,7 +220,6 @@ const ChatContainer = ({ currentSessionId, onSessionUpdate, onNewChat }: ChatCon
                                 className={`mb-4 sm:mb-6 ${message.role === 'user' ? 'flex justify-end' : ''}`}
                             >
                                 <div className={`flex gap-2 sm:gap-3 max-w-[85%] ${message.role === 'user' ? 'flex-row-reverse' : ''}`}>
-                                    {/* Avatar */}
                                     <div className={`shrink-0 w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center ${message.role === 'ai'
                                         ? 'bg-linear-to-br from-blue-500 to-purple-600'
                                         : 'bg-secondary'
@@ -250,7 +231,6 @@ const ChatContainer = ({ currentSessionId, onSessionUpdate, onNewChat }: ChatCon
                                         )}
                                     </div>
 
-                                    {/* Message Content */}
                                     <div className="flex-1 min-w-0">
                                         <div className={`rounded-2xl px-3 py-2 sm:px-4 sm:py-3 text-sm sm:text-base ${message.role === 'user'
                                             ? 'bg-primary text-primary-foreground'
@@ -259,7 +239,6 @@ const ChatContainer = ({ currentSessionId, onSessionUpdate, onNewChat }: ChatCon
                                             <div className="whitespace-pre-wrap wrap-break-word">{message.content}</div>
                                         </div>
 
-                                        {/* Action Buttons */}
                                         {message.role === 'ai' && (
                                             <div className="flex gap-2 mt-2 ml-1">
                                                 <button
@@ -281,7 +260,6 @@ const ChatContainer = ({ currentSessionId, onSessionUpdate, onNewChat }: ChatCon
                         ))
                     )}
 
-                    {/* Typing Indicator */}
                     {isTyping && (
                         <div className="flex gap-2 sm:gap-3 mb-4 sm:mb-6">
                             <div className="shrink-0 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-linear-to-br from-blue-500 to-purple-600 flex items-center justify-center">
@@ -302,7 +280,6 @@ const ChatContainer = ({ currentSessionId, onSessionUpdate, onNewChat }: ChatCon
                 </div>
             </div>
 
-            {/* Input Area */}
             <div className="border-t bg-card shrink-0">
                 <div className="px-3 sm:px-4 md:px-6 py-3 sm:py-4 max-w-4xl mx-auto">
                     <div className="relative">
