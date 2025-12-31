@@ -11,7 +11,11 @@ const app: Application = express();
 
 app.use(express.json({ limit: '10mb' }));
 app.use(morgan('dev'));
-app.use(cors());
+app.use(
+  cors({
+    origin: process.env.CORS_ORIGIN,
+  })
+);
 
 app.use((req, _res, next) => {
   if (req.body && typeof req.body === 'object') {

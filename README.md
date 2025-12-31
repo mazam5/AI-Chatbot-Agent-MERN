@@ -6,17 +6,46 @@ A full-stack application featuring an AI-powered customer support chat interface
 
 ### Prerequisites
 
-- Node.js v18+ and npm
-- PostgreSQL 12+
-- Google Gemini API key
+- [Git](https://git-scm.com)
+- [Node.js](https://nodejs.org) and npm
+- [PostgreSQL](https://www.postgresql.org)
+- [Google Gemini API key](https://console.cloud.google.com/apis/credentials)
 
-### 1. Clone & Install
+### 1. Clone the Repository
 
 ```bash
 # Clone repository
 git clone https://github.com/mazam5/AI-Chatbot-Agent-MERN
 cd AI-Chatbot-Agent-MERN
+```
 
+### 2. Environment Configuration
+
+Create `.env` files in the `backend/` and `frontend/` directories.
+
+```bash
+# Backend (.env file in backend/)
+PORT=3001
+DATABASE_URL=postgresql://db_username:db_password@localhost:5432/db_name?schema=public
+GOOGLE_GENAI_API_KEY=your_google_gemini_api_key_here
+CORS_ORIGIN=http://localhost:5173
+
+# Frontend (.env file in frontend/)
+VITE_API_URL=http://localhost:3001
+```
+
+### 3. Database Setup
+
+```bash
+# Run migrations from backend directory
+cd backend
+# make sure you have postgresql installed and username and password are correct
+npx prisma migrate dev
+```
+
+### 4. Install Dependencies
+
+```bash
 # Install backend dependencies
 cd backend
 npm install
@@ -26,38 +55,15 @@ cd ../frontend-react
 npm install
 ```
 
-### 2. Database Setup
+### 5. Start the Application
 
 ```bash
-# Create PostgreSQL database
-createdb chatdb
-
-# Run migrations from backend directory
-cd backend
-npm run dev
-```
-
-### 3. Environment Configuration
-
-```bash
-# Backend (.env file in backend/)
-PORT=3001
-DATABASE_URL=postgresql://localhost:5432/chatdb
-GOOGLE_GENAI_API_KEY=your_google_gemini_api_key_here
-
-# Frontend (.env file in frontend/)
-REACT_APP_API_URL=http://localhost:3001
-```
-
-### 4. Running the Application
-
-```bash
-# Terminal 1: Start backend
+# Start backend
 cd backend
 npm run dev
 
-# Terminal 2: Start frontend
-cd frontend
+# Start frontend
+cd ../frontend-react
 npm start
 ```
 
@@ -75,14 +81,16 @@ The backend follows a layered architecture:
 
 ```doc
 backend/
-├── config/          # Database configuration
-├── controllers/     # Request handlers (ChatController)
-├── services/        # Business logic (ChatService, LLMService)
-├── routes/         # Express route definitions
-├── middleware/     # Custom middleware (error handling)
-├── db/            # Database migrations & schema
-├── utils/         # Types and utilities
-└── app.ts         # Express app setup
+├── prisma/          # Prisma database client
+├── src/
+    ├── config/          # Environment configuration
+    ├── controllers/     # Request handlers (ChatController)
+    ├── services/        # Business logic (ChatService, LLMService)
+    ├── routes/          # Express route definitions
+    ├── utils/           # Types and utilities
+    └── app.ts           # Express app setup
+    └── server.ts        # Server entry point
+    └── swagger.ts       # Swagger documentation
 ```
 
 **Key Design Decisions:**
@@ -100,8 +108,9 @@ frontend-react/
 ├── src/
 │   ├── components/ # React components (ChatInterface, MessageList, etc.)
 │   ├── services/   # API service calls
-│   ├── hooks/      # Custom React hooks
-│   └── utils/      # Helper functions
+│   └── types/      # Type definitions
+├── public/
+│   └── fonts/      # Font files
 ```
 
 ## LLM Implementation
