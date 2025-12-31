@@ -4,7 +4,7 @@ import {
   ConversationSummary,
   SenderString,
   convertSender,
-} from '../utils/types';
+} from '../utils/types.js';
 
 export class ChatService {
   async getAllSessions(): Promise<ConversationSummary[]> {
