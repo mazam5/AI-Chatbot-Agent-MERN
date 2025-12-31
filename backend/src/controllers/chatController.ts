@@ -1,4 +1,3 @@
-// src/controllers/chatController.ts
 import { Request, Response } from 'express';
 import { ChatService } from '../services/chatService';
 import { LLMService } from '../services/llmService';
@@ -16,58 +15,36 @@ export class ChatController {
     try {
       const { message, sessionId } = req.body;
 
-      // Validate input
       if (!message || typeof message !== 'string') {
-        res
-          .status(400)
-          .json({ error: 'Message is required and must be a string' });
+        res.status(400).json({ error: 'Message is required' });
         return;
       }
 
-      const trimmedMessage = message.trim();
-      if (trimmedMessage.length === 0) {
-        res.status(400).json({ error: 'Message cannot be empty' });
-        return;
-      }
-
-      if (trimmedMessage.length > 2000) {
-        res
-          .status(400)
-          .json({ error: 'Message is too long (max 2000 characters)' });
-        return;
-      }
-
-      // Get or create conversation
+      // Create or validate conversation
       let conversationId = sessionId;
+
       if (!conversationId) {
         conversationId = await this.chatService.createConversation();
       } else {
-        // Verify conversation exists
         const exists =
           await this.chatService.conversationExists(conversationId);
         if (!exists) {
-          conversationId = await this.chatService.createConversation();
+          res.status(404).json({ error: 'Session not found' });
+          return;
         }
       }
 
       // Save user message
-      await this.chatService.saveMessage(
-        conversationId,
-        'user',
-        trimmedMessage
-      );
+      await this.chatService.saveMessage(conversationId, 'user', message);
 
       // Get conversation history
       const history =
         await this.chatService.getConversationHistory(conversationId);
 
-      // Generate AI reply
-      const aiReply = await this.llmService.generateReply(
-        history,
-        trimmedMessage
-      );
+      // Generate AI response
+      const aiReply = await this.llmService.generateReply(history, message);
 
-      // Save AI message
+      // Save AI response
       await this.chatService.saveMessage(conversationId, 'ai', aiReply);
 
       res.json({
@@ -75,26 +52,10 @@ export class ChatController {
         sessionId: conversationId,
       });
     } catch (error: any) {
-      console.error('Error in sendMessage:', error);
-
-      // Handle specific error types
-      if (error.message?.includes('API key')) {
-        res.status(500).json({
-          error: 'Configuration error. Please contact support.',
-        });
-      } else if (error.message?.includes('rate limit')) {
-        res.status(429).json({
-          error: 'Too many requests. Please try again in a moment.',
-        });
-      } else if (error.message?.includes('timeout')) {
-        res.status(504).json({
-          error: 'Request timeout. Please try again.',
-        });
-      } else {
-        res.status(500).json({
-          error: 'Failed to process message. Please try again.',
-        });
-      }
+      console.error('Chat controller error:', error);
+      res.status(500).json({
+        error: error.message || 'Failed to process message',
+      });
     }
   }
 
@@ -107,19 +68,13 @@ export class ChatController {
         return;
       }
 
-      const exists = await this.chatService.conversationExists(sessionId);
-      if (!exists) {
-        res.json({ messages: [] });
-        return;
-      }
-
-      const messages = await this.chatService.getConversationHistory(sessionId);
-      res.json({ messages });
-    } catch (error) {
-      console.error('Error in getHistory:', error);
-      res
-        .status(500)
-        .json({ error: 'Failed to retrieve conversation history' });
+      const history = await this.chatService.getConversationHistory(sessionId);
+      res.json(history);
+    } catch (error: any) {
+      console.error('Get history error:', error);
+      res.status(500).json({
+        error: 'Failed to retrieve conversation history',
+      });
     }
   }
 }
