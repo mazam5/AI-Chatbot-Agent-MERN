@@ -5,13 +5,13 @@
   "main": "dist/server.js",
   "scripts": {
     "dev": "tsx watch --inspect=9229 src/server.ts",
-    "build": "tsc",
+    "build": "prisma generate && tsc",
     "format": "prettier --write .",
-    "start": "node dist/server.js"
+    "start": "node dist/server.js",
+    "postinstall": "prisma generate"
   },
   "keywords": [],
   "author": "",
-  "type": "module",
   "license": "ISC",
   "devDependencies": {
     "@types/cors": "^2.8.19",

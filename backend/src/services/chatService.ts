@@ -1,9 +1,9 @@
 import { prisma } from '../config/prisma-config.js';
 import {
-  Message,
-  ConversationSummary,
-  SenderString,
   convertSender,
+  ConversationSummary,
+  Message,
+  SenderString,
 } from '../utils/types.js';
 
 export class ChatService {
@@ -27,9 +27,12 @@ export class ChatService {
 
       return {
         id: conversation.id,
-        title: firstUserMessage?.text.slice(0, 40) + '...' || 'New Chat',
-        lastMessage:
-          lastMessage?.text.slice(0, 60) + '...' || 'No messages yet',
+        title: firstUserMessage
+          ? firstUserMessage.text.slice(0, 40) + '...'
+          : 'New Chat',
+        lastMessage: lastMessage
+          ? lastMessage.text.slice(0, 60) + '...'
+          : 'No messages yet',
         timestamp: lastMessage?.createdAt || conversation.createdAt,
         messageCount: conversation.messages.length,
       };
@@ -66,7 +69,7 @@ export class ChatService {
     await prisma.message.create({
       data: {
         conversationId,
-        sender: sender,
+        sender: convertSender(sender),
         text: text.slice(0, 10000),
       },
     });
@@ -93,13 +96,11 @@ export class ChatService {
   ): Promise<Message[]> {
     const messages = await prisma.message.findMany({
       where: { conversationId },
-      orderBy: { createdAt: 'asc' },
+      orderBy: { createdAt: 'desc' },
       take: limit * 2,
     });
 
-    const recentMessages = messages.slice(-limit * 2);
-
-    return recentMessages.map((msg) => ({
+    return messages.reverse().map((msg) => ({
       id: msg.id,
       conversationId: msg.conversationId,
       sender: convertSender(msg.sender),
