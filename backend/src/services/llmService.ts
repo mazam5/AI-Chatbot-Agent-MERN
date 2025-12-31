@@ -1,6 +1,5 @@
-// src/services/llmService.ts
 import { GoogleGenAI } from '@google/genai';
-import { Message } from './chatService';
+import { Message } from '../utils/types';
 
 export class LLMService {
   private genAI: GoogleGenAI;
@@ -18,7 +17,7 @@ export class LLMService {
     this.genAI = new GoogleGenAI({ apiKey });
     this.model = 'gemini-2.0-flash-exp';
 
-    this.systemPrompt = `You are a helpful customer support agent for "TechStore", a small e-commerce store selling electronics and gadgets.
+    this.systemPrompt = `You are a helpful customer support agent for "Azamon", a small e-commerce store selling electronics and gadgets.
 
 Your role:
 - Answer customer questions clearly and concisely
@@ -50,7 +49,7 @@ RETURN & REFUND POLICY:
 - Free returns for defective or damaged items
 - Refunds processed within 5-7 business days after we receive the return
 - Original shipping costs are non-refundable (except for defective items)
-- To initiate a return, email support@techstore.com with your order number
+- To initiate a return, email support@azamon.com with your order number
 
 SUPPORT HOURS:
 - Live chat: Monday-Friday 9am-6pm EST
@@ -65,7 +64,7 @@ PAYMENT METHODS:
 WARRANTY:
 - All products come with manufacturer warranty
 - Extended warranty available for purchase at checkout
-- Warranty claims should be directed to support@techstore.com
+- Warranty claims should be directed to support@azamstore.com
 `;
   }
 
@@ -124,7 +123,7 @@ Support Agent:`;
       }
 
       // Fallback response
-      return "I apologize, but I'm experiencing technical difficulties. Please try again in a moment or email us at support@techstore.com for immediate assistance.";
+      return "I apologize, but I'm experiencing technical difficulties. Please try again in a moment or email us at support@azamon.com for immediate assistance.";
     }
   }
 

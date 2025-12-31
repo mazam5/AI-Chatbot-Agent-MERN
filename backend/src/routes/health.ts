@@ -14,13 +14,14 @@ const router = Router();
  *           application/json:
  *             schema:
  *               type: object
- *               items:
- *                 type: object
- *                 properties:
- *                   id:
- *                     type: number
- *                   name:
- *                     type: string
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: ok
+ *                 timestamp:
+ *                   type: string
+ *                   format: date-time
+ *                   example: 2025-12-31T12:34:56Z
  */
 router.get('/', async (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });

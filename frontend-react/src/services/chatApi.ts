@@ -1,29 +1,41 @@
+import type { ApiMessage } from '@/types'
 import axios from 'axios'
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001'
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
 
-const api = axios.create({
-  baseURL: API_BASE_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  timeout: 30000,
-})
-
-export const chatAPI = {
-  sendMessage: async (message: string, sessionId?: string): Promise<SendMessageResponse> => {
-    const response = await fetch(`${API_BASE_URL}/api/chat/message`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message, sessionId }),
-    })
-
-    if (!response.ok) {
-      throw new Error(`API error: ${response.status}`)
-    }
-
-    return response.json()
-  },
+export interface ChatResponse {
+  reply: string
+  sessionId: string
 }
 
-export default api
+export interface ChatSession {
+  id: string
+  title: string
+  lastMessage: string
+  timestamp: string
+  messageCount: number
+}
+
+export const chatAPI = {
+  async sendMessage(message: string, sessionId?: string): Promise<ChatResponse> {
+    const response = await axios.post(`${API_BASE_URL}/api/chat/message`, {
+      message,
+      sessionId,
+    })
+    return response.data
+  },
+
+  async getChatHistory(sessionId: string): Promise<ApiMessage[]> {
+    const response = await axios.get(`${API_BASE_URL}/api/chat/history/${sessionId}`)
+    return response.data
+  },
+
+  async getSessions(): Promise<ChatSession[]> {
+    const response = await axios.get(`${API_BASE_URL}/api/chat/sessions`)
+    return response.data
+  },
+
+  async deleteSession(sessionId: string): Promise<void> {
+    await axios.delete(`${API_BASE_URL}/api/chat/session/${sessionId}`)
+  },
+}

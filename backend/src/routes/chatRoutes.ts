@@ -38,4 +38,13 @@ router.post('/message', (req: Request, res: Response) =>
 router.get('/history/:sessionId', (req: Request, res: Response) =>
   chatController.getHistory(req, res)
 );
+
+router.get('/sessions', (req: Request, res: Response) => {
+  chatController.getSessions(req, res);
+});
+
+router.delete('/session/:sessionId', (req: Request, res: Response) => {
+  chatController.deleteSession(req, res);
+});
+
 export default router;

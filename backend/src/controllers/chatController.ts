@@ -77,4 +77,25 @@ export class ChatController {
       });
     }
   }
+
+  async getSessions(req: Request, res: Response): Promise<void> {
+    try {
+      const sessions = await this.chatService.getAllSessions();
+      res.json(sessions);
+    } catch (error) {
+      console.error('Get sessions error:', error);
+      res.status(500).json({ error: 'Failed to load sessions' });
+    }
+  }
+
+  async deleteSession(req: Request, res: Response): Promise<void> {
+    try {
+      const { sessionId } = req.params;
+      await this.chatService.deleteSession(sessionId);
+      res.json({ message: 'Session deleted successfully' });
+    } catch (error) {
+      console.error('Delete session error:', error);
+      res.status(500).json({ error: 'Failed to delete session' });
+    }
+  }
 }

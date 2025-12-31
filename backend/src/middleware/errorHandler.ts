@@ -1,14 +1,26 @@
 import { Request, Response, NextFunction } from 'express';
+import { ErrorResponse } from '../utils/types';
 
-export function errorHandler(
+export const errorHandler = (
   err: Error,
-  _req: Request,
+  req: Request,
   res: Response,
-  _next: NextFunction
-) {
-  console.error(err);
-
-  res.status(500).json({
-    message: err.message || 'Internal server error',
+  next: NextFunction
+) => {
+  console.error('Error:', {
+    message: err.message,
+    stack: err.stack,
+    path: req.path,
+    method: req.method,
   });
-}
+
+  const errorResponse: ErrorResponse = {
+    error: 'Internal server error',
+  };
+
+  if (process.env.NODE_ENV === 'development') {
+    errorResponse.details = err.message;
+  }
+
+  res.status(500).json(errorResponse);
+};
