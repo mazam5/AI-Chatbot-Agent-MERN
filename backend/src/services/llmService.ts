@@ -1,5 +1,5 @@
 import { GoogleGenAI } from '@google/genai';
-import { Message } from '../utils/types';
+import { Message } from '../utils/types.js';
 
 export class LLMService {
   private genAI: GoogleGenAI;
