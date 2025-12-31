@@ -1,16 +1,38 @@
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
-import { AppSidebar } from "@/components/app-sidebar"
-import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip"
-import { Kbd } from "./ui/kbd"
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/app-sidebar";
+import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
+import { Kbd } from "./ui/kbd";
 
-export default function Layout({ children }: { children: React.ReactNode }) {
+interface LayoutProps {
+    children: React.ReactNode;
+    currentSessionId: string | null;
+    onSelectSession: (sessionId: string) => void;
+    onNewChat: () => void;
+    onDeleteSession: (sessionId: string) => void;
+    refreshTrigger: number;
+}
+
+export default function Layout({
+    children,
+    currentSessionId,
+    onSelectSession,
+    onNewChat,
+    onDeleteSession,
+    refreshTrigger
+}: LayoutProps) {
     return (
         <SidebarProvider>
             <div className="flex w-full h-screen">
-                <AppSidebar />
+                <AppSidebar
+                    currentSessionId={currentSessionId}
+                    onSelectSession={onSelectSession}
+                    onNewChat={onNewChat}
+                    onDeleteSession={onDeleteSession}
+                    key={refreshTrigger}
+                />
 
                 <main className="relative flex-1 overflow-hidden">
-                    <div className="absolute top-0 left-0">
+                    <div className="absolute top-0 left-0 z-10">
                         <Tooltip>
                             <TooltipTrigger asChild>
                                 <SidebarTrigger />
@@ -28,5 +50,5 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 </main>
             </div>
         </SidebarProvider>
-    )
+    );
 }
